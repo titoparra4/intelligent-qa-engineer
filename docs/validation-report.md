@@ -57,10 +57,12 @@ each mutant:
 
 All 3 mutants were caught.
 
-**Not run here:**
-- **Python 3.12.** The CI matrix includes it; it runs on the first CI run.
-- **The GitHub Actions workflow itself.** **PENDING** until the branch is
-  pushed.
+**GitHub Actions (PR #1):**
+- **Newman job** and **Python 3.12 job:** passed on the first run.
+- **Python 3.9 job:** could not run, because `actions/setup-python` has no
+  3.9 build for the current `ubuntu-latest` image (Ubuntu 26.04). The matrix
+  now uses 3.10 and 3.12. Python 3.9 compatibility rests on the local runs
+  above (3.9.6).
 
 **What the examples' evidence means.** These are `SIMULATED` results: they
 ran against a mock written from the same contract. They show that the

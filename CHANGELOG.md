@@ -40,5 +40,5 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - validation report;
   - security policy;
   - contribution guide.
-- **GitHub Actions CI** on Python 3.9 and 3.12, with Newman, plus a
+- **GitHub Actions CI** on Python 3.10 and 3.12, with Newman, plus a
   packaged skill zip as an artifact.
