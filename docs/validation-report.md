@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-04
 **Environment:** macOS (Darwin 27.2), Python 3.9.6, Node.js 24.15.0, Newman 6.2.3, Claude Code CLI (`claude plugin validate`)
-**Commit:** first release on branch `create`
+**Commit:** v0.1.0 (merged to `main` as `970b944` via PR #1)
 
 This report keeps four kinds of evidence apart, as the product specification
 requires:
@@ -63,6 +63,10 @@ All 3 mutants were caught.
   3.9 build for the current `ubuntu-latest` image (Ubuntu 26.04). The matrix
   now uses 3.10 and 3.12. Python 3.9 compatibility rests on the local runs
   above (3.9.6).
+- **Second run (commit `232a3d4`):** all 4 jobs passed. These were
+  *Validate skill and tests* on Python 3.10 and 3.12, *Postman collection
+  via Newman*, and *Package skill*. The PR was then merged into `main` as
+  `970b944`.
 
 **What the examples' evidence means.** These are `SIMULATED` results: they
 ran against a mock written from the same contract. They show that the
