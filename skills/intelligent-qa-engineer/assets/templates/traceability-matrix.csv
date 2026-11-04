@@ -1,0 +1,2 @@
+requirement_id,requirement_summary,source,priority,risk_ids,test_case_ids,coverage_status,notes
+REQ-EXAMPLE-1,Quantity per cart line is limited to 1..10,Story AC-2,High,RISK-1,TC-EXAMPLE-001,Partial,Lower boundary (0 and 1) not yet covered

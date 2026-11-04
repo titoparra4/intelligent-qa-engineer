@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest a new capability, technique, framework or example
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / use case
+      description: What QA task is hard today and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: How could it be validated?
+      description: Static check, automated test, or manual scenario (see tests/scenarios).
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Checks
+      options:
+        - label: It keeps the skill portable (no vendor-specific frontmatter or absolute paths)
+        - label: It does not require claims that cannot be verified

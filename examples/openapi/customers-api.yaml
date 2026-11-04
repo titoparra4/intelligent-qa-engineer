@@ -1,0 +1,360 @@
+openapi: 3.0.3
+info:
+  title: Customers API (example)
+  version: 1.0.0
+  description: |
+    Example contract used by the Intelligent QA Engineer demonstrations.
+    A deterministic local implementation lives in examples/mock-api/server.py.
+
+    Business rules:
+    - BR-1: email is unique, compared case-insensitively.
+    - BR-2: status lifecycle: active <-> suspended, active|suspended -> closed. `closed` is terminal; closed customers cannot be modified.
+    - BR-3: credit_limit is an integer between 0 and 50000 inclusive; default 0.
+    - BR-4: only admins may delete customers.
+    - BR-5: POST /customers supports an optional Idempotency-Key. A retry with the same key and body returns the original response without creating a duplicate; the same key with a different body is rejected.
+servers:
+  - url: http://127.0.0.1:8000
+    description: Local mock (default)
+security:
+  - bearerAuth: []
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Liveness check
+      security: []
+      responses:
+        "200":
+          description: Service is up
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+  /customers:
+    get:
+      operationId: listCustomers
+      summary: List customers
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/Status"
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        "200":
+          description: A page of customers ordered by id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    post:
+      operationId: createCustomer
+      summary: Create a customer
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerCreate"
+      responses:
+        "201":
+          description: Created (or replayed for a repeated Idempotency-Key)
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the created customer
+            Idempotent-Replayed:
+              schema:
+                type: string
+                enum: ["true"]
+              description: Present only when the response is a replay
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "400":
+          $ref: "#/components/responses/MalformedJson"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "415":
+          $ref: "#/components/responses/UnsupportedMediaType"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+  /customers/{customerId}:
+    parameters:
+      - name: customerId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getCustomer
+      summary: Get a customer
+      responses:
+        "200":
+          description: The customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      operationId: updateCustomer
+      summary: Partially update a customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerUpdate"
+      responses:
+        "200":
+          description: The updated customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "400":
+          $ref: "#/components/responses/MalformedJson"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "415":
+          $ref: "#/components/responses/UnsupportedMediaType"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    delete:
+      operationId: deleteCustomer
+      summary: Delete a customer (admin only)
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: User or admin bearer token. The local mock accepts demo tokens configured via environment variables.
+  schemas:
+    Status:
+      type: string
+      enum: [active, suspended, closed]
+    Customer:
+      type: object
+      additionalProperties: false
+      required: [id, name, email, status, credit_limit, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          pattern: "^cus_[0-9]{6}$"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        status:
+          $ref: "#/components/schemas/Status"
+        credit_limit:
+          type: integer
+          minimum: 0
+          maximum: 50000
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CustomerCreate:
+      type: object
+      additionalProperties: false
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Leading/trailing whitespace is trimmed; must not be blank.
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        status:
+          type: string
+          enum: [active, suspended]
+          default: active
+        credit_limit:
+          type: integer
+          minimum: 0
+          maximum: 50000
+          default: 0
+    CustomerUpdate:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        status:
+          $ref: "#/components/schemas/Status"
+        credit_limit:
+          type: integer
+          minimum: 0
+          maximum: 50000
+    CustomerList:
+      type: object
+      additionalProperties: false
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Customer"
+        pagination:
+          type: object
+          additionalProperties: false
+          required: [limit, offset, total]
+          properties:
+            limit:
+              type: integer
+            offset:
+              type: integer
+            total:
+              type: integer
+    Error:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message, details]
+          properties:
+            code:
+              type: string
+              enum:
+                - unauthorized
+                - token_expired
+                - forbidden
+                - not_found
+                - malformed_json
+                - unsupported_media_type
+                - validation_error
+                - idempotency_key_reused
+                - email_conflict
+                - invalid_state_transition
+                - payload_too_large
+                - method_not_allowed
+                - internal_error
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: object
+                required: [field, issue]
+                properties:
+                  field:
+                    type: string
+                  issue:
+                    type: string
+  responses:
+    MalformedJson:
+      description: Body is not a valid JSON object (code malformed_json)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Missing, invalid or expired token (codes unauthorized, token_expired)
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: Authenticated but not allowed (code forbidden)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Customer not found (code not_found)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Conflict:
+      description: Email already used (email_conflict) or invalid state transition (invalid_state_transition)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    UnsupportedMediaType:
+      description: Content-Type is not application/json
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ValidationError:
+      description: Semantic validation failed (codes validation_error, idempotency_key_reused)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

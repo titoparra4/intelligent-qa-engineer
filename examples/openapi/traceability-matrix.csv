@@ -1,0 +1,15 @@
+requirement_id,requirement_summary,source,priority,risk_ids,test_case_ids,coverage_status,notes
+API-HEALTH,GET /health returns 200 status ok without auth,openapi paths./health.get,High,,TC-CUS-001,Covered,
+API-LIST,"GET /customers paginates (limit 1..100 default 20, offset>=0) and filters by status",openapi paths./customers.get,Medium,RISK-5,TC-CUS-021;TC-CUS-022;TC-CUS-023,Covered,Sorting other than by id not defined
+API-CREATE,POST /customers validates CustomerCreate and returns 201 with Location,openapi paths./customers.post,Critical,RISK-3,TC-CUS-002;TC-CUS-006;TC-CUS-007;TC-CUS-008;TC-CUS-009;TC-CUS-010;TC-CUS-011;TC-CUS-012,Covered,
+API-GET,GET /customers/{id} returns 200 or 404,openapi paths./customers/{customerId}.get,High,,TC-CUS-019;TC-CUS-020,Covered,
+API-UPDATE,PATCH /customers/{id} applies partial CustomerUpdate (minProperties 1),openapi paths./customers/{customerId}.patch,High,RISK-4,TC-CUS-024;TC-CUS-027;TC-CUS-029;TC-CUS-035,Covered,
+API-DELETE,DELETE /customers/{id} returns 204/403/404,openapi paths./customers/{customerId}.delete,High,,TC-CUS-030;TC-CUS-032,Covered,
+API-ERR,Error responses follow components.schemas.Error,openapi components.responses,Medium,,TC-CUS-011;TC-CUS-013;TC-CUS-016;TC-CUS-020;TC-CUS-026;TC-CUS-031,Partial,Asserted on a sample of codes; 413/405/500 undocumented (Q-2)
+SEC-AUTH,All /customers operations require bearer auth (401 unauthorized/token_expired),openapi security + responses.Unauthorized,Critical,RISK-1,TC-CUS-016;TC-CUS-017;TC-CUS-018,Partial,Token for another environment and token scopes not defined in contract (Q-4)
+BR-1,Email unique case-insensitively,openapi info.description BR-1,Critical,RISK-2,TC-CUS-013;TC-CUS-028;TC-CUS-033,Covered,"Covers create, update and concurrency"
+BR-2,Lifecycle active<->suspended; ->closed; closed terminal,openapi info.description BR-2,Critical,RISK-4,TC-CUS-009;TC-CUS-025;TC-CUS-026,Covered,
+BR-3,credit_limit integer 0..50000 default 0,openapi info.description BR-3,High,RISK-3,TC-CUS-002;TC-CUS-003;TC-CUS-004;TC-CUS-005;TC-CUS-034,Covered,
+BR-4,Only admins delete customers,openapi info.description BR-4,Critical,RISK-1,TC-CUS-030;TC-CUS-031,Covered,
+BR-5,Idempotency-Key replay semantics on create,openapi info.description BR-5,Critical,RISK-2,TC-CUS-014;TC-CUS-015,Covered,
+NFR-RATE,Rate limiting behaviour (429),Not in contract (Q-1),Medium,,,Untestable,Contract defines no limits; raise Q-1 before testing

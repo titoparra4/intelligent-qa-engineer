@@ -1,0 +1,2 @@
+test_case_id,requirement_id,title,objective,priority,preconditions,test_data,steps,expected_result,test_type,technique,automation,tags
+TC-EXAMPLE-001,REQ-EXAMPLE-1,Rejects quantity above maximum,Verify that a quantity of max+1 is rejected with a validation error,High,User is authenticated; product P-1 exists with max quantity 10,quantity=11,1. Open product P-1 | 2. Enter quantity 11 | 3. Click Add to cart,Item is not added; message 'Maximum quantity is 10' is shown; cart total unchanged,Functional,BVA,Automate,negative;boundary

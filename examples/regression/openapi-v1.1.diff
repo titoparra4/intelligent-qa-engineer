@@ -1,0 +1,41 @@
+--- a/examples/openapi/customers-api.yaml	(v1.0.0)
++++ b/examples/openapi/customers-api.yaml	(v1.1.0, proposed)
+@@ info @@
+-  version: 1.0.0
++  version: 1.1.0
+@@ info.description @@
+-    - BR-3: credit_limit is an integer between 0 and 50000 inclusive; default 0.
++    - BR-3: credit_limit is an integer between 0 and 100000 inclusive; default 0.
++    - BR-6: the credit_limit of a suspended customer cannot be increased (409 credit_limit_frozen).
+@@ components.schemas.Customer.properties @@
+         credit_limit:
+           type: integer
+           minimum: 0
+-          maximum: 50000
++          maximum: 100000
++        phone:
++          type: string
++          pattern: "^\\+[1-9][0-9]{1,14}$"
+@@ components.schemas.CustomerCreate.properties @@
+         credit_limit:
+           type: integer
+           minimum: 0
+-          maximum: 50000
++          maximum: 100000
+           default: 0
++        phone:
++          type: string
++          pattern: "^\\+[1-9][0-9]{1,14}$"
+@@ components.schemas.CustomerUpdate.properties @@
+         credit_limit:
+           type: integer
+           minimum: 0
+-          maximum: 50000
++          maximum: 100000
++        phone:
++          type: string
++          pattern: "^\\+[1-9][0-9]{1,14}$"
+@@ components.schemas.Error.properties.error.properties.code.enum @@
+                 - invalid_state_transition
++                - credit_limit_frozen
+                 - payload_too_large

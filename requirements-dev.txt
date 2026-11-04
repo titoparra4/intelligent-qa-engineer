@@ -1,0 +1,6 @@
+# Repository validation (tools/ and tests/). The skill itself needs none of these.
+pytest>=7.4,<9
+PyYAML>=6.0,<7
+# Needed to run the pytest example from the repository root
+requests>=2.31,<3
+jsonschema>=4.17,<5
