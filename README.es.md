@@ -54,6 +54,17 @@ No hace falta nombrar el modo. La skill lo infiere de la petición.
 
 ## Instalación rápida
 
+Con la CLI `skills` ([skills.sh](https://skills.sh)), sin clonar el repositorio:
+
+```bash
+npx skills add titoparra4/intelligent-qa-engineer
+```
+
+La CLI envía telemetría anónima de instalación a skills.sh; usa
+`DISABLE_TELEMETRY=1` para desactivarla. Esta vía **aún no está verificada**.
+
+O manualmente:
+
 ```bash
 git clone https://github.com/titoparra4/intelligent-qa-engineer.git
 cd intelligent-qa-engineer

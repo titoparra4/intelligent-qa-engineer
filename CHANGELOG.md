@@ -6,6 +6,11 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Installation via the `skills` CLI (`npx skills add titoparra4/intelligent-qa-engineer`),
+  listed on skills.sh. Documented in both READMEs and `docs/installation.md`.
+
 ## [0.1.0] — 2026-11-04
 
 ### Added

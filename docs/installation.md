@@ -178,6 +178,24 @@ CSVs.
 
 ## Other Agent Skills–compatible agents
 
+### Option A: `skills` CLI (skills.sh)
+
+The open-source [`skills` CLI](https://github.com/vercel-labs/skills) installs
+skills straight from a GitHub repository, without cloning it first:
+
+```bash
+npx skills add titoparra4/intelligent-qa-engineer
+```
+
+Update later with `npx skills update`. By default the CLI sends anonymous
+telemetry (skill name, skill files, timestamp) that ranks skills on
+<https://skills.sh>. Set `DISABLE_TELEMETRY=1` to opt out.
+
+> This path is documented at <https://skills.sh/docs> (read on 2026-11-04)
+> but is **not yet verified** in the [validation report](validation-report.md).
+
+### Option B: manual copy
+
 Copy `skills/intelligent-qa-engineer/` into the skills directory your agent
 documents. Keep the folder name and the structure unchanged.
 
