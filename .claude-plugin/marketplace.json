@@ -1,0 +1,14 @@
+{
+  "name": "intelligent-qa-engineer",
+  "owner": {
+    "name": "Tito Parra"
+  },
+  "plugins": [
+    {
+      "name": "intelligent-qa-engineer",
+      "source": "./",
+      "description": "QA engineering skill: requirement analysis, test strategy, test cases with traceability, negative testing, API automation, regression, coverage and QA reports.",
+      "version": "0.1.0"
+    }
+  ]
+}

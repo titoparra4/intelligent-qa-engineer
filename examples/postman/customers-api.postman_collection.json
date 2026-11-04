@@ -1,0 +1,1020 @@
+{
+  "info": {
+    "_postman_id": "6f1d2c8e-3b7a-4c55-9a1e-0c2f4d9e7a10",
+    "name": "Customers API — Intelligent QA Engineer example",
+    "description": "Generated from examples/openapi/customers-api.yaml. Test case IDs (TC-CUS-NNN) match examples/openapi/test-cases.csv. Requests inside a folder chain collection variables, so run the collection in order. Target only the local mock or an environment you are authorized to test.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "customerSchema",
+      "value": "{\"type\": \"object\", \"additionalProperties\": false, \"required\": [\"id\", \"name\", \"email\", \"status\", \"credit_limit\", \"created_at\", \"updated_at\"], \"properties\": {\"id\": {\"type\": \"string\", \"pattern\": \"^cus_[0-9]{6}$\"}, \"name\": {\"type\": \"string\", \"minLength\": 1, \"maxLength\": 100}, \"email\": {\"type\": \"string\", \"maxLength\": 254}, \"status\": {\"type\": \"string\", \"enum\": [\"active\", \"suspended\", \"closed\"]}, \"credit_limit\": {\"type\": \"integer\", \"minimum\": 0, \"maximum\": 50000}, \"created_at\": {\"type\": \"string\"}, \"updated_at\": {\"type\": \"string\"}}}"
+    },
+    {
+      "key": "errorSchema",
+      "value": "{\"type\": \"object\", \"additionalProperties\": false, \"required\": [\"error\"], \"properties\": {\"error\": {\"type\": \"object\", \"additionalProperties\": false, \"required\": [\"code\", \"message\", \"details\"], \"properties\": {\"code\": {\"type\": \"string\", \"enum\": [\"unauthorized\", \"token_expired\", \"forbidden\", \"not_found\", \"malformed_json\", \"unsupported_media_type\", \"validation_error\", \"idempotency_key_reused\", \"email_conflict\", \"invalid_state_transition\", \"payload_too_large\", \"method_not_allowed\", \"internal_error\"]}, \"message\": {\"type\": \"string\"}, \"details\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"field\", \"issue\"], \"properties\": {\"field\": {\"type\": \"string\"}, \"issue\": {\"type\": \"string\"}}}}}}}}"
+    },
+    {
+      "key": "customerId",
+      "value": ""
+    },
+    {
+      "key": "customerEmail",
+      "value": ""
+    },
+    {
+      "key": "idempotencyKey",
+      "value": ""
+    },
+    {
+      "key": "idempotentEmail",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"response time under 2000 ms (local mock sanity bound)\", function () { pm.expect(pm.response.responseTime).to.be.below(2000); });"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Health",
+      "item": [
+        {
+          "name": "TC-CUS-001 Health returns ok",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"body is {status: ok}\", function () { pm.expect(pm.response.json()).to.eql({ status: \"ok\" }); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Authentication",
+      "item": [
+        {
+          "name": "TC-CUS-016 List without token returns 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"error code is unauthorized\", function () { pm.expect(pm.response.json().error.code).to.eql(\"unauthorized\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });",
+                  "",
+                  "pm.test(\"WWW-Authenticate challenge present\", function () { pm.expect(pm.response.headers.get(\"WWW-Authenticate\")).to.include(\"Bearer\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-018 Expired token returns 401 token_expired",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"error code is token_expired\", function () { pm.expect(pm.response.json().error.code).to.eql(\"token_expired\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{expiredToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Create",
+      "item": [
+        {
+          "name": "TC-CUS-002 Create with required fields applies defaults",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const suffix = Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);",
+                  "pm.collectionVariables.set(\"customerEmail\", \"qa-\" + suffix + \"@example.test\");"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "",
+                  "pm.test(\"matches Customer schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"customerSchema\"))); });",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.test(\"name trimmed and defaults applied\", function () {",
+                  "    pm.expect(body.name).to.eql(\"Ada Lovelace\");",
+                  "    pm.expect(body.status).to.eql(\"active\");",
+                  "    pm.expect(body.credit_limit).to.eql(0);",
+                  "});",
+                  "pm.test(\"Location header points to the new customer\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/customers/\" + body.id);",
+                  "});",
+                  "pm.collectionVariables.set(\"customerId\", body.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"  Ada Lovelace  \",\n  \"email\": \"{{customerEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-004 Create rejects credit_limit 50001",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"error code is validation_error\", function () { pm.expect(pm.response.json().error.code).to.eql(\"validation_error\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });",
+                  "",
+                  "pm.test(\"details name credit_limit\", function () {",
+                  "    pm.expect(pm.response.json().error.details.map(function (d) { return d.field; })).to.include(\"credit_limit\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"QA\",\n  \"email\": \"boundary-{{$timestamp}}@example.test\",\n  \"credit_limit\": 50001\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-006 Create rejects missing email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"error code is validation_error\", function () { pm.expect(pm.response.json().error.code).to.eql(\"validation_error\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"QA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-011 Create rejects malformed JSON",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"error code is malformed_json\", function () { pm.expect(pm.response.json().error.code).to.eql(\"malformed_json\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"QA\", \"email\": "
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-012 Create rejects text/plain",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 415\", function () { pm.response.to.have.status(415); });",
+                  "pm.test(\"error code is unsupported_media_type\", function () { pm.expect(pm.response.json().error.code).to.eql(\"unsupported_media_type\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "name=QA"
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-013 Create rejects duplicate email ignoring case",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set(\"duplicateEmail\", pm.collectionVariables.get(\"customerEmail\").toUpperCase());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"error code is email_conflict\", function () { pm.expect(pm.response.json().error.code).to.eql(\"email_conflict\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicate\",\n  \"email\": \"{{duplicateEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-014 Idempotent create (first call)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const suffix = Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);",
+                  "pm.collectionVariables.set(\"idempotencyKey\", \"idem-\" + suffix);",
+                  "pm.collectionVariables.set(\"idempotentEmail\", \"idem-\" + suffix + \"@example.test\");"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"not marked as replay\", function () { pm.expect(pm.response.headers.has(\"Idempotent-Replayed\")).to.be.false; });",
+                  "pm.collectionVariables.set(\"idempotentId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotencyKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Idem\",\n  \"email\": \"{{idempotentEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-014 Idempotent create (retry replays original)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"same customer id as the first call\", function () {",
+                  "    pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get(\"idempotentId\"));",
+                  "});",
+                  "pm.test(\"marked as replay\", function () { pm.expect(pm.response.headers.get(\"Idempotent-Replayed\")).to.eql(\"true\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{idempotencyKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Idem\",\n  \"email\": \"{{idempotentEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Read",
+      "item": [
+        {
+          "name": "TC-CUS-019 Get existing customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "",
+                  "pm.test(\"matches Customer schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"customerSchema\"))); });",
+                  "",
+                  "pm.test(\"returns the created customer\", function () { pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get(\"customerId\")); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{customerId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-020 Get unknown customer returns 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"error code is not_found\", function () { pm.expect(pm.response.json().error.code).to.eql(\"not_found\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/cus_999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "cus_999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-023 List rejects limit 101",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"error code is validation_error\", function () { pm.expect(pm.response.json().error.code).to.eql(\"validation_error\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers?limit=101",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "101"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-023 List accepts limit 100",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"pagination echoes limit\", function () { pm.expect(pm.response.json().pagination.limit).to.eql(100); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers?limit=100",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Lifecycle",
+      "item": [
+        {
+          "name": "TC-CUS-025 Suspend active customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"customer is suspended\", function () { pm.expect(pm.response.json().status).to.eql(\"suspended\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{customerId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"suspended\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-025 Close suspended customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"customer is closed\", function () { pm.expect(pm.response.json().status).to.eql(\"closed\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{customerId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"closed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-026 Reactivating a closed customer is rejected",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"error code is invalid_state_transition\", function () { pm.expect(pm.response.json().error.code).to.eql(\"invalid_state_transition\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{customerId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Delete",
+      "item": [
+        {
+          "name": "TC-CUS-031 User cannot delete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "pm.test(\"error code is forbidden\", function () { pm.expect(pm.response.json().error.code).to.eql(\"forbidden\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{customerId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-030 Admin deletes customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{customerId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-CUS-030 Deleted customer is gone",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"error code is not_found\", function () { pm.expect(pm.response.json().error.code).to.eql(\"not_found\"); });",
+                  "pm.test(\"matches Error schema\", function () { pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{customerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{customerId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cleanup idempotent customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/customers/{{idempotentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "{{idempotentId}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

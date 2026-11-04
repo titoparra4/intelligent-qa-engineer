@@ -1,0 +1,10 @@
+requirement_id,requirement_summary,source,priority,risk_ids,test_case_ids,coverage_status,notes
+AC-1,Shopper can enter a coupon code and apply it,US-142 AC-1,High,RISK-3,TC-CPN-001;TC-CPN-012;TC-CPN-013;TC-CPN-014,Covered,
+AC-2,Valid coupon reduces subtotal by its percentage (5%-50%); total updates immediately,US-142 AC-2,Critical,RISK-1,TC-CPN-001;TC-CPN-002;TC-CPN-003;TC-CPN-017,Covered,TC-CPN-003 depends on rounding assumption A-3
+AC-3,Minimum order subtotal 30.00 EUR with documented message,US-142 AC-3,Critical,RISK-1,TC-CPN-004;TC-CPN-005;TC-CPN-015;TC-CPN-016,Partial,Inclusiveness (Q-1) and post-apply cart changes (Q-8) open
+AC-4,Expired coupons rejected with documented message,US-142 AC-4,High,,TC-CPN-006;TC-CPN-007;TC-CPN-016,Partial,Expiry timezone and inclusiveness open (Q-4)
+AC-5,Only one coupon per order,US-142 AC-5,High,RISK-2,TC-CPN-008;TC-CPN-017,Partial,Replace vs reject behaviour undefined (Q-6)
+AC-6,Each coupon used once per shopper,US-142 AC-6,Critical,RISK-2,TC-CPN-009;TC-CPN-010;TC-CPN-016,Partial,When usage is consumed and cancelled orders undefined (Q-7)
+AC-7,Discount shown as a separate summary line,US-142 AC-7,Medium,,TC-CPN-001,Covered,
+BR-SHIP,Shipping costs are never discounted,US-142 PO notes,High,RISK-1,TC-CPN-011,Covered,
+NFR-SEC-1,Coupon code guessing is throttled,Not stated - proposed from RISK-4,High,RISK-4,,Not covered,Not a stated requirement; raised as Q-11 before designing tests

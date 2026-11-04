@@ -1,0 +1,46 @@
+name: Bug report
+description: The skill, a script or an example behaves incorrectly
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include real credentials, personal data or confidential artifacts.
+        For security issues use private vulnerability reporting instead (see SECURITY.md).
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Skill behaviour (SKILL.md / references)
+        - validate_test_cases.py
+        - Repository tooling (tools/)
+        - Example (mock API / pytest / Postman)
+        - Documentation / installation
+    validations:
+      required: true
+  - type: input
+    id: agent
+    attributes:
+      label: Agent and version
+      placeholder: "Claude Code 2.x / Codex CLI x.y / ChatGPT desktop / other"
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Prompt used, artifacts (sanitized), commands run.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: Include output or logs (redact secrets).
+    validations:
+      required: true

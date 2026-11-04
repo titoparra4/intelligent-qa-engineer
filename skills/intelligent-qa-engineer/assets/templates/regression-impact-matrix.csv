@@ -1,0 +1,2 @@
+change_id,component,change_type,impact_type,affected_requirement_ids,risk,existing_tests,action,new_tests,suite,rationale
+CHG-EXAMPLE-1,POST /orders,Contract - behavioral,Confirmed,REQ-EXAMPLE-1,High,TC-EXAMPLE-001,Update,TC-EXAMPLE-010,Regression,Maximum quantity raised from 10 to 20 so the old boundary test must change and a new max+1 test is needed

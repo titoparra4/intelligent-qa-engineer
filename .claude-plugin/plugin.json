@@ -1,0 +1,12 @@
+{
+  "name": "intelligent-qa-engineer",
+  "version": "0.1.0",
+  "description": "QA engineering skill: requirement analysis, risk-based test strategy, test cases with traceability, negative testing, API test automation, regression selection, coverage and QA reports.",
+  "author": {
+    "name": "Tito Parra"
+  },
+  "homepage": "https://github.com/titoparra4/intelligent-qa-engineer",
+  "repository": "https://github.com/titoparra4/intelligent-qa-engineer",
+  "license": "MIT",
+  "keywords": ["qa", "testing", "test-automation", "api-testing", "regression", "agent-skills"]
+}

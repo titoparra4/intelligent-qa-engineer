@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# Node
+node_modules/
+
+# Test output
+reports/
+junit*.xml
+.coverage
+htmlcov/
+
+# Local secrets / environment (keep the committed *.example files)
+.env
+.env.*
+!.env.example
+*.postman_environment.local.json
+
+# Build artifacts
+dist/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
