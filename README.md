@@ -126,6 +126,17 @@ was executed.
 The full instructions for each platform, including updates and uninstalling,
 are in **[docs/installation.md](docs/installation.md)**.
 
+**Any compatible agent: `skills` CLI ([skills.sh](https://skills.sh)).**
+One command, no clone needed:
+
+```bash
+npx skills add titoparra4/intelligent-qa-engineer
+```
+
+The CLI sends anonymous install telemetry to skills.sh. Set
+`DISABLE_TELEMETRY=1` to opt out. This install path is **not yet verified**
+in the [validation report](docs/validation-report.md).
+
 **Claude Code: plugin marketplace.** This repository is also a single-plugin
 marketplace:
 
