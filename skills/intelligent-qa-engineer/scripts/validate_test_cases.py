@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validate test-case CSVs and, optionally, a traceability matrix.
 
-Standard library only (Python 3.9+). Usage:
+Standard library only (Python 3.11+). Usage:
 
     python validate_test_cases.py test-cases.csv
     python validate_test_cases.py test-cases.csv --traceability traceability-matrix.csv

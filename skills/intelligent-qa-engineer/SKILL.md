@@ -15,7 +15,7 @@ description: >-
   testing or penetration testing of live systems.
 license: MIT
 compatibility: >-
-  Works in analysis-only mode with no tools. Optional: Python 3.9+ to run the
+  Works in analysis-only mode with no tools. Optional: Python 3.11+ to run the
   bundled validator; Node.js with Newman, or Python with pytest, to execute
   generated automation.
 metadata:

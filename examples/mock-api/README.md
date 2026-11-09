@@ -4,7 +4,7 @@
 [`../openapi/customers-api.yaml`](../openapi/customers-api.yaml). It is
 used by the pytest and Postman examples.
 
-- Uses only the Python standard library (3.9+).
+- Uses only the Python standard library (3.11+).
 - Keeps all data in memory. The data resets on every start.
 - Binds to `127.0.0.1` by default. **Do not expose it on a network.**
 

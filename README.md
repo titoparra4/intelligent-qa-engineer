@@ -102,9 +102,9 @@ Analyze examples/user-story/input-user-story.md and generate test cases with a t
 | Use | Requirement |
 |---|---|
 | The skill itself | An agent that supports Agent Skills. **Nothing else.** Analysis mode needs no tools |
-| Bundled validator | Python 3.9+ (standard library only) |
-| pytest example | Python 3.9+, `pip install -r examples/pytest/requirements.txt` |
-| Postman example | Node.js 18+ (Newman 6 via `npx` or `npm i -g newman@6`), Python 3.9+ for the mock, `curl` |
+| Bundled validator | Python 3.11+ (standard library only) |
+| pytest example | Python 3.11+, `pip install -r examples/pytest/requirements.txt` |
+| Postman example | Node.js 18+ (Newman 6 via `npx` or `npm i -g newman@6`), Python 3.11+ for the mock, `curl` |
 | Repository tests | `pip install -r requirements-dev.txt` |
 
 ## Supported environments
