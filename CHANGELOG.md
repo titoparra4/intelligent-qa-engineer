@@ -17,8 +17,9 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - CI: GitHub Actions bumped to the Node 24 majors (`checkout`, `setup-python`,
   `setup-node`, `upload-artifact` @v7); Newman runs on Node 24.
-- CI: runner pinned to `ubuntu-24.04` instead of `ubuntu-latest`, so the
-  Python 3.10 job does not break when the image moves on.
+- CI: runner pinned to `ubuntu-24.04` instead of `ubuntu-latest`, so jobs do
+  not break when the image moves on.
+- CI: Python matrix moved from 3.10 (end of life, October 2026) to 3.11 and 3.12.
 
 ## [0.1.0] — 2026-11-04
 
