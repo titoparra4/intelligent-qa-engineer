@@ -10,6 +10,15 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Installation via the `skills` CLI (`npx skills add titoparra4/intelligent-qa-engineer`),
   listed on skills.sh. Documented in both READMEs and `docs/installation.md`.
+- Dependabot: security updates enabled and `.github/dependabot.yml` for weekly
+  GitHub Actions and pip updates.
+
+### Changed
+
+- CI: GitHub Actions bumped to the Node 24 majors (`checkout`, `setup-python`,
+  `setup-node`, `upload-artifact` @v7); Newman runs on Node 24.
+- CI: runner pinned to `ubuntu-24.04` instead of `ubuntu-latest`, so the
+  Python 3.10 job does not break when the image moves on.
 
 ## [0.1.0] — 2026-11-04
 

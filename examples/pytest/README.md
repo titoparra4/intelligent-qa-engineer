@@ -71,7 +71,7 @@ every push.
 The minimal job for your own repository is:
 
 ```yaml
-- uses: actions/setup-python@v5
+- uses: actions/setup-python@v7
   with: { python-version: "3.12" }
 - run: pip install -r examples/pytest/requirements.txt
 - run: pytest examples/pytest --junitxml=reports/junit.xml

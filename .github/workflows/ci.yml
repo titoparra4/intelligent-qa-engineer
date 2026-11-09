@@ -12,15 +12,15 @@ permissions:
 jobs:
   validate:
     name: Validate skill and tests (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.12"]  # 3.9 is unavailable on ubuntu-latest; 3.9 is verified locally
+        python-version: ["3.10", "3.12"]  # runner pinned to 24.04 so 3.10 builds stay available; 3.9 is verified locally
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
@@ -54,24 +54,24 @@ jobs:
 
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: junit-python-${{ matrix.python-version }}
           path: reports/
 
   newman:
     name: Postman collection via Newman (local mock)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: Install Newman
         run: npm install -g newman@6
@@ -83,24 +83,24 @@ jobs:
 
       - name: Upload Newman report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: newman-junit
           path: reports/
 
   package:
     name: Package skill
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [validate]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build zip (folder at zip root)
         run: |
           mkdir -p dist
           cd skills && zip -r ../dist/intelligent-qa-engineer.zip intelligent-qa-engineer -x '*/__pycache__/*'
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: intelligent-qa-engineer-skill
           path: dist/intelligent-qa-engineer.zip
