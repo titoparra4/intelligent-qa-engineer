@@ -2,7 +2,7 @@
 # Start the local Customers mock, run the Postman collection with Newman,
 # then stop the mock. Targets 127.0.0.1 only.
 #   Usage: examples/postman/run-local.sh [port]
-# Requires: Python 3.9+, Node.js 18+ (Newman is fetched with npx if missing).
+# Requires: Python 3.11+, Node.js 18+ (Newman is fetched with npx if missing).
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

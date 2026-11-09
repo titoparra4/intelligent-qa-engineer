@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]  # 3.10 is EOL (Oct 2026); 3.9 is verified locally
+        python-version: ["3.11", "3.12"]  # oldest = documented minimum; 3.10 is EOL (Oct 2026)
     steps:
       - uses: actions/checkout@v7
 

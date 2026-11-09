@@ -22,7 +22,7 @@
 
 ## Run with Newman (local mock)
 
-Requirements: Python 3.9+ (for the mock), Node.js 18+, and `curl`.
+Requirements: Python 3.11+ (for the mock), Node.js 18+, and `curl`.
 
 ```bash
 examples/postman/run-local.sh            # port 8000
