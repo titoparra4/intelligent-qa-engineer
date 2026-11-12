@@ -8,6 +8,8 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- User manual in PDF, in Spanish (`docs/Manual-de-usuario.pdf`) and English
+  (`docs/User-manual.pdf`), linked from both READMEs.
 - Installation via the `skills` CLI (`npx skills add titoparra4/intelligent-qa-engineer`),
   listed on skills.sh. Documented in both READMEs and `docs/installation.md`.
 - Dependabot: security updates enabled and `.github/dependabot.yml` for weekly

@@ -4,6 +4,8 @@
 changes into test strategies, traceable test cases, runnable API automation
 and honest QA reports.**
 
+📘 **User manual (PDF):** [English](docs/User-manual.pdf) · [Español](docs/Manual-de-usuario.pdf)
+
 `intelligent-qa-engineer` is a portable skill built on the open
 [Agent Skills](https://agentskills.io) standard. When installed in a
 compatible agent (Claude Code, OpenAI Codex and others), it acts as a senior

@@ -15,6 +15,8 @@ OpenAPI, código y *diffs* en estos entregables:
 - análisis de cobertura;
 - informes de calidad.
 
+📘 **Manual de usuario (PDF):** [Español](docs/Manual-de-usuario.pdf) · [English](docs/User-manual.pdf)
+
 La documentación completa está en inglés: [README.md](README.md).
 
 ## Qué la hace distinta
